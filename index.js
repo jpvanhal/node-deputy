@@ -7,7 +7,7 @@ var detective = require('detective');
 
 module.exports = function (cacheFile) {
     mkdirp.sync(path.dirname(cacheFile), 0700);
-    
+
     var cache = {};
     if (path.existsSync(cacheFile)) {
         var body = fs.readFileSync(cacheFile);
@@ -16,20 +16,20 @@ module.exports = function (cacheFile) {
         }
         catch (err) {}
     }
-    
+
     function save (h, res) {
         cache[h] = res;
-        fs.writeFile(cacheFile, JSON.stringify(cache));
+        fs.writeFileSync(cacheFile, JSON.stringify(cache));
     }
-    
+
     function hash (src) {
         return new crypto.Hash('md5').update(src).digest('hex');
     }
-    
+
     var deputy = function (src) {
         return deputy.find(src).strings;
     };
-    
+
     deputy.find = function (src) {
         var h = hash(src);
         var c = cache[h];
@@ -40,6 +40,6 @@ module.exports = function (cacheFile) {
             return c;
         }
     };
-    
+
     return deputy;
 };
